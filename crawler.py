@@ -60,7 +60,13 @@ def insertIntoDB(links):
 		for link in links:
 
 			# We throw away fragments
-			portions = urlnorm.parse(link)
+			try:
+				portions = urlnorm.parse(link)
+
+			# We should either try to handle this and/or have a db for bad links
+			except UnicodeEncodeError:
+				continue
+
 			link = urlparse.urlunsplit((portions[0], portions[1], portions[2], portions[3], ""))
 			cursor2.execute("SELECT url FROM data WHERE url=%s", (link))
 			row = cursor2.fetchone()
@@ -89,8 +95,14 @@ if __name__ == "__main__":
 
 			try:
 				logging.info("Downloading from " + row[0])
+
+				if sys.version_info < (2, 6):
+					f = urllib2.urlopen(row[0])
+
 				# A timeout of 30 seconds is more then enough for anybody
-				f = urllib2.urlopen(row[0], None, 50)
+				else:
+					f = urllib2.urlopen(row[0], None, 30)
+
 				contents = f.read().strip()
 
 			except socket.error, e:
