@@ -1,0 +1,21 @@
+CREATE TABLE data(
+
+	url text not null,
+	contents longblob,
+	downloaded boolean default 0,
+	crawler_id integer default 0,
+	http_code integer default 0,
+	content_type varchar(512),
+	tidy_parsed boolean default 0,
+	tidy_warnings integer default NULL,
+	tidy_errors integer default NULL,
+	timestamp_added int default NULL,
+	timestamp_downloaded int default NULL,
+	timestamp_tidy_parsed int default NULL
+
+) ENGINE=MyISAM;
+
+INSERT INTO data (url, crawler_id) VALUES ("http://www.w3c.org/", 0);
+CREATE INDEX crawler_id_idx ON data(crawler_id);
+CREATE INDEX downloaded_idx ON data(downloaded);
+CREATE INDEX url_idx ON data(url(512));
